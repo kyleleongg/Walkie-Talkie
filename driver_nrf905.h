@@ -10,6 +10,8 @@ low level code and allow for clean, readable code in the main.c file.
 #ifndef NRF905_H
 #define NRF905_H
 
+#include <stdint.h>
+
 //Define the stm32fxxx files needed for spi...? Should be generated in cubeide
 
 //RF - Configuration Register Descriptions pg. 23
@@ -132,7 +134,21 @@ typedef enum
 } NRF905_crc;
 
 
-//Define functions to be written in .c driver
+//Define struct to hold all pointers to low level functions which will be defined in main.c with STM32's HAL functions
+
+
+//Define every function that will be needed (pg. 21)
+void nrf905_write_config(nrf905_t* nrf, uint8_t start_reg, const uint8_t* data, uint8_t len); //Write n config bytes starting at a reg
+uint8_t nrf905_read_config(nrf905_t* nrf, uint8_t config_register); //Read back config bytes from a config register
+void nrf905_write_tx_payload(nrf905_t* nrf, const void* buf, uint8_t len); //Use a pointer to a buffer because the tx payload can be up to 32 bytes
+void nrf905_read_tx_payload(nrf905_t* nrf, void* buf, uint8_t len); //takes in a pointer of where to store the data in main.c
+void nrf905_write_tx_address(nrf905_t* nrf, const uint8_t* addr, uint8_t len); 
+void nrf905_read_tx_address(nrf905_t* nrf, void* buf, uint8_t len);
+void nrf905_read_rx_payload(nrf905_t* nrf, void* buf, uint8_t len);
+uint8_t nrf905_read_status(nrf905_t* nrf); //Send a NOP to receive status register contents (AM, DR, pg.25)
+
+
+
 
 
 
