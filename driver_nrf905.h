@@ -40,16 +40,16 @@ typedef enum
 //Config1[4]
 typedef enum
 {
-    NRF905_RX_RED_PWR_EN = 0x10, 
-    NRF905_RX_RED_PWR_DISABLE = 0x00
+    NRF905_RX_RED_PWR_EN      = 0x10, //Enable reduced power to save a couple mA
+    NRF905_RX_RED_PWR_DISABLE = 0x00  //Disbale reduced power 
 } NRF905_rx_reduced_pwr;
 
 
 //Config1[5]
 typedef enum
 {
-    NRF905_AUTO_RETRAN_EN = 0x20,
-    NRF905_AUTO_RETRAN_DISABLE = 0x00
+    NRF905_AUTO_RETRAN_EN      = 0x20, //Enable auto retransmission 
+    NRF905_AUTO_RETRAN_DISABLE = 0x00  //Disable auto retransmission
 } NRF905_auto_retran;
 
 
@@ -129,12 +129,28 @@ typedef enum
 //Config9[6]
 typedef enum
 {
-    NRF905_CRC_EN = 0X40,      //Enable CRC mode
+    NRF905_CRC_EN      = 0X40, //Enable CRC mode
     NRF905_CRC_DISABLE = 0x00  //Disable CRC mode
 } NRF905_crc;
 
 
-//Define struct to hold all pointers to low level functions which will be defined in main.c with STM32's HAL functions
+//Define struct to hold all pointers to low level functions which will be defined in main.c with STM32's HAL functions. This makes driver portable across diff MCUs
+typedef struct {
+    //SPI calls
+    uint8_t (*spi_xfer)(uint8_t byte); //Single byte transmit and receive
+    void (*spi_write)(const uint8_t* tx, uint8_t len); //Writing len bytes
+    void (*spi_readwrite)(const uint8_t* tx, uint8_t* rx, uint8_t len); //Reading and writing len bytes
+
+    //Control pins
+    void (*ncs_low)(void); //Pull ncs low
+    void (*ncs_high)(void); //Pull ncs high
+    void (*pwr_up_high)(void); //PWR_UP high
+    void (*pwr_up_low)(void); //PWR_UP low
+    void (*chip_en_high)(void); //TRX_CE high
+    void (*chip_en_low)(void); //TRX_CE low
+    void (*tx_en_high)(void); //TX mode
+    void (*tx_en_low)(void); //RX mode
+} nrf905_t;
 
 
 //Define every function that will be needed (pg. 21)
@@ -146,13 +162,9 @@ void nrf905_write_tx_address(nrf905_t* nrf, const uint8_t* addr, uint8_t len);
 void nrf905_read_tx_address(nrf905_t* nrf, void* buf, uint8_t len);
 void nrf905_read_rx_payload(nrf905_t* nrf, void* buf, uint8_t len);
 uint8_t nrf905_read_status(nrf905_t* nrf); //Send a NOP to receive status register contents (AM, DR, pg.25)
-
-
-
-
-
-
-
+void nrf905_spi_programming(nrf905_t* nrf); //Put RFIC in power down or standby mode to allow SPI programming (pg. 16)
+void nrf905_tx_mode(nrf905_t* nrf); //Put chip into TX mode
+void nrf905_rx_mode(nrf905_t* nrf); //Put chip into RX mode
 
 
 #endif
