@@ -165,6 +165,7 @@ uint8_t nrf905_read_status(nrf905_t* nrf); //Send a NOP to receive status regist
 void nrf905_spi_programming(nrf905_t* nrf); //Put RFIC in power down or standby mode to allow SPI programming (pg. 16)
 void nrf905_tx_mode(nrf905_t* nrf); //Put chip into TX mode
 void nrf905_rx_mode(nrf905_t* nrf); //Put chip into RX mode
+void nrf905_print_config(nrf905_t* nrf); //Printf all config settings (to SWO on STM32)
 
 
 #endif
