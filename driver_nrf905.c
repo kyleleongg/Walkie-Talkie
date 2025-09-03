@@ -145,6 +145,22 @@ void nrf905_spi_programming(nrf905_t* nrf) {
     nrf->chip_en_high();
 }
 
-void nrf905_tx_mode(nrf905_t* nrf); //Put chip into TX mode
-void nrf905_rx_mode(nrf905_t* nrf); //Put chip into RX mode
+//Put chip into TX mode and send out the tx payload (pg. 16)
+void nrf905_tx_mode(nrf905_t* nrf) {
+    nrf->pwr_up_high();
+    nrf->chip_en_high();
+    nrf->tx_en_high();
+    //Do we want to put chip back into standby mode after sending packet?
+    nrf->chip_en_low();
+}
+
+//Put chip into RX mode, 
+void nrf905_rx_mode(nrf905_t* nrf) {
+    nrf->pwr_up_high();
+    nrf->chip_en_high();
+    nrf->tx_en_low();
+    //IF (DATA READY PIN HIGH)
+    nrf->chip_en_low();
+}
+
 void nrf905_print_config(nrf905_t* nrf); //Printf all config settings (to SWO on STM32)
